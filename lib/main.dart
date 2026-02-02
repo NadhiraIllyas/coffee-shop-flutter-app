@@ -1,7 +1,21 @@
 import 'package:flutter/material.dart';
-import 'screens/login_screen.dart';
+
 import 'screens/signup.dart';
+import 'screens/login_screen.dart';
+
+import 'screens/login_screen.dart';
+
+import 'screens/signup.dart';
+
+
+import 'screens/addtocartpage.dart';
+
+import 'screens/addtocartpage.dart';
+
+
 import 'screens/cart_screen.dart';
+
+
 
 void main() {
   runApp(const MyApp());
