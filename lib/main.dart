@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup.dart';
+import 'screens/cart_screen.dart';
 
 void main() {
   runApp(const MyApp());
