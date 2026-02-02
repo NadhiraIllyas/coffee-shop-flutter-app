@@ -4,7 +4,6 @@ import 'screens/login_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
