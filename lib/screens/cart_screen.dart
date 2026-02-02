@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 
+void main() {
+  runApp(const MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: CartScreen(),
+  ));
+}
+
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
 
@@ -8,7 +15,6 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  // Sample cart items
   final List<CartItem> _cartItems = [
     CartItem(
       name: "Caramel Macchiato",
@@ -43,7 +49,6 @@ class _CartScreenState extends State<CartScreen> {
       customization: "Warmed",
     ),
   ];
-
   double get _subtotal => _cartItems.fold(
       0, (total, item) => total + (item.price * item.quantity));
   double get _deliveryFee => 2.99;
@@ -379,7 +384,6 @@ class _CartScreenState extends State<CartScreen> {
       ),
     );
   }
-
   Widget _buildDeliveryAddress() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -455,7 +459,6 @@ class _CartScreenState extends State<CartScreen> {
       ),
     );
   }
-
   Widget _buildPaymentMethod() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -563,7 +566,6 @@ class _CartScreenState extends State<CartScreen> {
       ),
     );
   }
-
   Widget _buildSummaryRow(String label, String value, {bool isTotal = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -590,7 +592,6 @@ class _CartScreenState extends State<CartScreen> {
       ),
     );
   }
-
   Widget _buildCheckoutSection() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -699,7 +700,6 @@ class _CartScreenState extends State<CartScreen> {
       ),
     );
   }
-
   void _showOrderPlacedDialog() {
     showDialog(
       context: context,
@@ -772,8 +772,8 @@ class _CartScreenState extends State<CartScreen> {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: () {
-                      Navigator.pop(context); // Close dialog
-                      Navigator.pop(context); // Go back to home
+                      Navigator.pop(context); 
+                      Navigator.pop(context); 
                     },
                     child: Center(
                       child: Text(
@@ -795,7 +795,6 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 }
-
 class CartItem {
   String name;
   String image;
