@@ -392,6 +392,322 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-// ... Keep all the helper methods (_buildCategoryItem, _buildCoffeeCard,
-// _buildBottomNavigationBar, _buildNavItem) exactly the same as above
+  // ========== HELPER METHODS ==========
+
+  Widget _buildCategoryItem({
+    required IconData icon,
+    required String label,
+    required bool isActive,
+  }) {
+    return Container(
+      width: 100,
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      decoration: BoxDecoration(
+        color: isActive ? Colors.brown[700] : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isActive ? Colors.brown[700]! : Colors.grey[200]!,
+          width: 1,
+        ),
+        boxShadow: isActive
+            ? [
+                BoxShadow(
+                  color: Colors.brown.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ]
+            : [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.05),
+                  blurRadius: 5,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: isActive ? Colors.white : Colors.brown[700],
+            size: 24,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: isActive ? Colors.white : Colors.brown[800],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCoffeeCard({
+    required String name,
+    required String tagline,
+    required String price,
+    required double rating,
+    required String imagePath,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.grey[200]!,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Coffee Image
+            Container(
+              height: 120,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.brown[50],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: Colors.brown[100],
+                      child: Center(
+                        child: Icon(
+                          Icons.coffee,
+                          size: 40,
+                          color: Colors.brown[700],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            
+            // Coffee Name
+            Text(
+              name,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.brown[900],
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            
+            // Tag Line
+            const SizedBox(height: 2),
+            Text(
+              tagline,
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            
+            const SizedBox(height: 6),
+            
+            // Rating Row
+            Row(
+              children: [
+                Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                  size: 14,
+                ),
+                const SizedBox(width: 2),
+                Text(
+                  rating.toString(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.brown[800],
+                  ),
+                ),
+                const SizedBox(width: 2),
+                Text(
+                  "(120)",
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 8),
+            
+            // Price and Add Button
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  price,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.brown[700],
+                  ),
+                ),
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.brown[800]!,
+                        Colors.brown[600]!,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.add,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomNavigationBar(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          top: BorderSide(
+            color: Colors.grey[200]!,
+            width: 1,
+          ),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              // Home - Already on this screen
+              _buildNavItem(
+                icon: Icons.home,
+                label: "Home",
+                isActive: true,
+                onTap: () {
+                  // Already on home screen
+                },
+              ),
+              
+              // Order/Cart
+              _buildNavItem(
+                icon: Icons.shopping_bag,
+                label: "Order",
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CartScreen()),
+                  );
+                },
+              ),
+              
+              // Favorite
+              _buildNavItem(
+                icon: Icons.favorite_border,
+                label: "Favorite",
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Favorites feature coming soon!'),
+                      backgroundColor: Colors.brown[700],
+                    ),
+                  );
+                },
+              ),
+              
+              // Profile
+              _buildNavItem(
+                icon: Icons.person_outline,
+                label: "Profile",
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required IconData icon,
+    required String label,
+    bool isActive = false,
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            color: isActive ? Colors.brown[700] : Colors.grey[600],
+            size: 24,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: isActive ? Colors.brown[700] : Colors.grey[600],
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
