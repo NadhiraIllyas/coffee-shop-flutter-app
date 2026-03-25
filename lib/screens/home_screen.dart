@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
 import 'cart_screen.dart';
 import 'profile_screen.dart';
+import 'addtocartpage.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -137,7 +137,7 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(height: 32),
 
                     // Popular Items Section
-                    _buildPopularItemsSection(),
+                    _buildPopularItemsSection(context),
 
                     const SizedBox(height: 32),
 
@@ -239,7 +239,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPopularItemsSection() {
+  Widget _buildPopularItemsSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -276,6 +276,7 @@ class HomeScreen extends StatelessWidget {
           childAspectRatio: 0.75,
           children: [
             _buildCoffeeCard(
+              context: context,
               name: "Caramel Macchiato",
               tagline: "Sweet caramel goodness",
               price: "\$4.99",
@@ -283,6 +284,7 @@ class HomeScreen extends StatelessWidget {
               imagePath: 'assets/images/coffee/caramel_macchiato.jpg',
             ),
             _buildCoffeeCard(
+              context: context,
               name: "Cold Brew",
               tagline: "Smooth & refreshing",
               price: "\$3.99",
@@ -290,6 +292,7 @@ class HomeScreen extends StatelessWidget {
               imagePath: 'assets/images/coffee/cold_brew.jpg',
             ),
             _buildCoffeeCard(
+              context: context,
               name: "Cappuccino",
               tagline: "Classic Italian",
               price: "\$4.49",
@@ -297,6 +300,7 @@ class HomeScreen extends StatelessWidget {
               imagePath: 'assets/images/coffee/cappuccino.jpg',
             ),
             _buildCoffeeCard(
+              context: context,
               name: "Matcha Latte",
               tagline: "Green tea delight",
               price: "\$5.49",
@@ -304,6 +308,7 @@ class HomeScreen extends StatelessWidget {
               imagePath: 'assets/images/coffee/matcha_latte.jpg',
             ),
             _buildCoffeeCard(
+              context: context,
               name: "Espresso",
               tagline: "Strong & bold",
               price: "\$2.99",
@@ -311,6 +316,7 @@ class HomeScreen extends StatelessWidget {
               imagePath: 'assets/images/coffee/espresso.jpg',
             ),
             _buildCoffeeCard(
+              context: context,
               name: "Mocha",
               tagline: "Chocolate infused",
               price: "\$5.29",
@@ -448,155 +454,164 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildCoffeeCard({
+    required BuildContext context,
     required String name,
     required String tagline,
     required String price,
     required double rating,
     required String imagePath,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.grey[200]!,
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const AddToCartPage()),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: Colors.grey[200]!,
+            width: 1,
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Coffee Image
-            Container(
-              height: 120,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Colors.brown[50],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.asset(
-                  imagePath,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      color: Colors.brown[100],
-                      child: Center(
-                        child: Icon(
-                          Icons.coffee,
-                          size: 40,
-                          color: Colors.brown[700],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            
-            // Coffee Name
-            Text(
-              name,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.brown[900],
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            
-            // Tag Line
-            const SizedBox(height: 2),
-            Text(
-              tagline,
-              style: TextStyle(
-                fontSize: 11,
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            
-            const SizedBox(height: 6),
-            
-            // Rating Row
-            Row(
-              children: [
-                Icon(
-                  Icons.star,
-                  color: Colors.amber,
-                  size: 14,
-                ),
-                const SizedBox(width: 2),
-                Text(
-                  rating.toString(),
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.brown[800],
-                  ),
-                ),
-                const SizedBox(width: 2),
-                Text(
-                  "(120)",
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 8),
-            
-            // Price and Add Button
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  price,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.brown[700],
-                  ),
-                ),
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.brown[800]!,
-                        Colors.brown[600]!,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.add,
-                    color: Colors.white,
-                    size: 18,
-                  ),
-                ),
-              ],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
             ),
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Coffee Image
+              Container(
+                height: 120,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.brown[50],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.asset(
+                    imagePath,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.brown[100],
+                        child: Center(
+                          child: Icon(
+                            Icons.coffee,
+                            size: 40,
+                            color: Colors.brown[700],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              
+              // Coffee Name
+              Text(
+                name,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.brown[900],
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              
+              // Tag Line
+              const SizedBox(height: 2),
+              Text(
+                tagline,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              
+              const SizedBox(height: 6),
+              
+              // Rating Row
+              Row(
+                children: [
+                  Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                    size: 14,
+                  ),
+                  const SizedBox(width: 2),
+                  Text(
+                    rating.toString(),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.brown[800],
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  Text(
+                    "(120)",
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 8),
+              
+              // Price and Add Button
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    price,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.brown[700],
+                    ),
+                  ),
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.brown[800]!,
+                          Colors.brown[600]!,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -640,7 +655,7 @@ class HomeScreen extends StatelessWidget {
               // Order/Cart
               _buildNavItem(
                 icon: Icons.shopping_bag,
-                label: "Order",
+                label: "Cart",
                 onTap: () {
                   Navigator.push(
                     context,
