@@ -1,24 +1,5 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Coffee Shop',
-      theme: ThemeData(
-        primarySwatch: Colors.brown,
-      ),
-      home: const SplashScreen(),
-    );
-  }
-}
+import 'login_screen.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -34,7 +15,7 @@ class SplashScreen extends StatelessWidget {
             decoration: const BoxDecoration(
               image: DecorationImage(
                 image: NetworkImage(
-                  'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1920&fit=crop', // Beautiful coffee beans
+                  'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1920&fit=crop',
                 ),
                 fit: BoxFit.cover,
               ),
@@ -141,7 +122,7 @@ class SplashScreen extends StatelessWidget {
                   ),
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => const LoginScreen()),
                       );
@@ -173,19 +154,6 @@ class SplashScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-// Placeholder for your next screen
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Login Screen')),
-      body: const Center(child: Text('Login Screen')),
     );
   }
 }

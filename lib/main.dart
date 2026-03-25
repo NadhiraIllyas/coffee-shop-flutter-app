@@ -4,8 +4,9 @@ import 'screens/signup.dart';
 import 'screens/home_screen.dart';
 import 'screens/cart_screen.dart';
 import 'screens/profile_screen.dart';
-// If you have addtocartpage.dart:
-// import 'screens/addtocartpage.dart';
+import 'screens/addtocartpage.dart';
+import 'screens/payment.dart';
+import 'screens/splashscreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,14 +29,15 @@ class MyApp extends StatelessWidget {
           centerTitle: true,
         ),
       ),
-      home: const LoginScreen(),
-      // Optional: Define routes for cleaner navigation
+      home: const SplashScreen(),
       routes: {
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => const SignUpScreen(),
         '/home': (context) => const HomeScreen(),
         '/cart': (context) => const CartScreen(),
         '/profile': (context) => const ProfileScreen(),
+        '/add-to-cart': (context) => const AddToCartPage(),
+        '/payment': (context) => const PaymentScreen(),
       },
     );
   }
