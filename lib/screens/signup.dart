@@ -1,24 +1,6 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Coffee App',
-      theme: ThemeData(
-        primarySwatch: Colors.brown,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: const SignUpScreen(),
-    );
-  }
-}
+import 'login_screen.dart';
+import 'home_screen.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
@@ -433,7 +415,10 @@ class SignUpScreen extends StatelessWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: () {
-                      // Handle sign up
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const HomeScreen()),
+                      );
                     },
                     child: Center(
                       child: Text(
@@ -545,23 +530,31 @@ class SignUpScreen extends StatelessWidget {
               const SizedBox(height: 40),
           
               // Already have account text
-              RichText(
-                text: TextSpan(
-                  text: "Already have an account? ",
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 15,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: "Sign In",
-                      style: TextStyle(
-                        color: Colors.brown[700],
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  );
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: "Already have an account? ",
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 15,
                     ),
-                  ],
+                    children: [
+                      TextSpan(
+                        text: "Sign In",
+                        style: TextStyle(
+                          color: Colors.brown[700],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               

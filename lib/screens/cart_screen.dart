@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'payment.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -665,8 +666,11 @@ class _CartScreenState extends State<CartScreen> {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(16),
                       onTap: () {
-                        // Proceed to checkout
-                        _showOrderPlacedDialog();
+                        // Navigate to payment screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const PaymentScreen()),
+                        );
                       },
                       child: Center(
                         child: Row(
@@ -772,8 +776,8 @@ class _CartScreenState extends State<CartScreen> {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: () {
-                      Navigator.pop(context); 
-                      Navigator.pop(context); 
+                      Navigator.pop(context); // Close dialog
+                      Navigator.pop(context); // Go back to home
                     },
                     child: Center(
                       child: Text(
