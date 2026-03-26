@@ -1,9 +1,85 @@
+import 'package:coffee_shop_application/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
 
-class SignUpScreen extends StatelessWidget {
+
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
+  bool _agreeToTerms = false;
+
+  Future<void> _handleSignUp() async {
+    if (_nameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _phoneController.text.isEmpty ||
+        _passwordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match')),
+      );
+      return;
+    }
+
+    if (!_agreeToTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please agree to terms and conditions')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final user = await _authService.signUp(
+        email: _emailController.text,
+        password: _passwordController.text,
+        fullName: _nameController.text,
+        phone: _phoneController.text,
+      );
+
+      if (user != null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Account created successfully!')),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Sign up failed: ${e.toString()}')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +176,7 @@ class SignUpScreen extends StatelessWidget {
                   ],
                 ),
                 child: TextField(
+                  controller: _nameController,
                   style: const TextStyle(fontSize: 16),
                   decoration: InputDecoration(
                     prefixIcon: Container(
@@ -147,6 +224,7 @@ class SignUpScreen extends StatelessWidget {
                   ],
                 ),
                 child: TextField(
+                  controller: _emailController,
                   style: const TextStyle(fontSize: 16),
                   decoration: InputDecoration(
                     prefixIcon: Container(
@@ -194,6 +272,7 @@ class SignUpScreen extends StatelessWidget {
                   ],
                 ),
                 child: TextField(
+                  controller: _phoneController,
                   keyboardType: TextInputType.phone,
                   style: const TextStyle(fontSize: 16),
                   decoration: InputDecoration(
@@ -242,6 +321,7 @@ class SignUpScreen extends StatelessWidget {
                   ],
                 ),
                 child: TextField(
+                  controller: _passwordController,
                   obscureText: true,
                   style: const TextStyle(fontSize: 16),
                   decoration: InputDecoration(
@@ -294,6 +374,7 @@ class SignUpScreen extends StatelessWidget {
                   ],
                 ),
                 child: TextField(
+                  controller: _confirmPasswordController,
                   obscureText: true,
                   style: const TextStyle(fontSize: 16),
                   decoration: InputDecoration(
@@ -337,19 +418,28 @@ class SignUpScreen extends StatelessWidget {
               // Terms & Conditions
               Row(
                 children: [
-                  Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey[400]!,
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _agreeToTerms = !_agreeToTerms;
+                      });
+                    },
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey[400]!,
+                        ),
+                        borderRadius: BorderRadius.circular(4),
                       ),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Icon(
-                      Icons.check,
-                      size: 14,
-                      color: Colors.brown[700],
+                      child: _agreeToTerms
+                          ? Icon(
+                              Icons.check,
+                              size: 14,
+                              color: Colors.brown[700],
+                            )
+                          : null,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -414,22 +504,19 @@ class SignUpScreen extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const HomeScreen()),
-                      );
-                    },
+                    onTap: _isLoading ? null : _handleSignUp,
                     child: Center(
-                      child: Text(
-                        "Sign Up",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
+                      child: _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : Text(
+                              "Sign Up",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
                     ),
                   ),
                 ),
@@ -564,5 +651,15 @@ class SignUpScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 }

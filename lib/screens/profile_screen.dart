@@ -1,5 +1,10 @@
+import 'package:coffee_shop_application/services/auth_service.dart';
+import 'package:coffee_shop_application/services/supabase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login_screen.dart';
+// import 'services/auth_service.dart';
+// import 'services/supabase_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -9,9 +14,63 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final AuthService _authService = AuthService();
+  final SupabaseClient _supabase = SupabaseService().client;
+  
+  Map<String, dynamic>? _userProfile;
+  bool _isLoading = true;
   bool _notificationsEnabled = true;
   bool _darkMode = false;
   bool _promoEmails = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final user = _authService.currentUser;
+      if (user != null) {
+        final response = await _supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+        
+        setState(() {
+          _userProfile = response;
+        });
+      }
+    } catch (e) {
+      print('Error loading profile: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _handleLogout() async {
+    try {
+      await _authService.signOut();
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error logging out: ${e.toString()}')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,48 +98,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         centerTitle: true,
       ),
-      body: CustomScrollView(
-        slivers: [
-          // Main Content
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-              child: Column(
-                children: [
-                  // Profile Card
-                  _buildProfileCard(),
-
-                  const SizedBox(height: 32),
-
-                  // Statistics
-                  _buildStatistics(),
-
-                  const SizedBox(height: 32),
-
-                  // Settings Section
-                  _buildSettingsSection(),
-
-                  const SizedBox(height: 32),
-
-                  // Support Section
-                  _buildSupportSection(),
-
-                  const SizedBox(height: 40),
-
-                  // Logout Button
-                  _buildLogoutButton(),
-
-                  const SizedBox(height: 40),
-                ],
-              ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                    child: Column(
+                      children: [
+                        // Profile Card
+                        _buildProfileCard(),
+                        const SizedBox(height: 32),
+                        // Statistics
+                        _buildStatistics(),
+                        const SizedBox(height: 32),
+                        // Settings Section
+                        _buildSettingsSection(),
+                        const SizedBox(height: 32),
+                        // Support Section
+                        _buildSupportSection(),
+                        const SizedBox(height: 40),
+                        // Logout Button
+                        _buildLogoutButton(),
+                        const SizedBox(height: 40),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 
   Widget _buildProfileCard() {
+    final fullName = _userProfile?['full_name'] ?? 'Coffee Lover';
+    final email = _authService.currentUser?.email ?? 'user@email.com';
+    final membership = _userProfile?['membership_level'] ?? 'Bronze';
+    
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -127,21 +182,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(50),
-                  child: Image.asset(
-                    'assets/images/profile/user.jpg',
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Center(
-                        child: Icon(
-                          Icons.person,
-                          size: 50,
-                          color: Colors.white,
+                  child: _userProfile?['avatar_url'] != null
+                      ? Image.network(
+                          _userProfile!['avatar_url'],
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Center(
+                              child: Icon(
+                                Icons.person,
+                                size: 50,
+                                color: Colors.white,
+                              ),
+                            );
+                          },
+                        )
+                      : Center(
+                          child: Icon(
+                            Icons.person,
+                            size: 50,
+                            color: Colors.white,
+                          ),
                         ),
-                      );
-                    },
-                  ),
                 ),
                 Positioned(
                   bottom: 0,
@@ -164,14 +227,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
           ),
-
           const SizedBox(height: 20),
-
           // Name and Email
           Column(
             children: [
               Text(
-                "Alex Johnson",
+                fullName,
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -180,7 +241,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                "alex.johnson@email.com",
+                email,
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[600],
@@ -206,7 +267,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      "Gold Member",
+                      '$membership Member',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -218,9 +279,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
-
           const SizedBox(height: 20),
-
           // Edit Profile Button
           Container(
             width: double.infinity,
@@ -266,6 +325,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildStatistics() {
+    final totalOrders = _userProfile?['total_orders'] ?? 0;
+    final totalSpent = _userProfile?['total_spent'] ?? 0.0;
+    
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -297,7 +359,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               _buildStatItem(
                 icon: Icons.coffee,
-                value: "128",
+                value: totalOrders.toString(),
                 label: "Cups Ordered",
                 color: Colors.orange,
               ),
@@ -308,10 +370,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: Colors.amber,
               ),
               _buildStatItem(
-                icon: Icons.local_fire_department,
-                value: "42",
-                label: "Streak Days",
-                color: Colors.red,
+                icon: Icons.monetization_on,
+                value: "\$${totalSpent.toStringAsFixed(0)}",
+                label: "Total Spent",
+                color: Colors.green,
               ),
             ],
           ),
@@ -766,13 +828,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: Colors.transparent,
                         child: InkWell(
                           borderRadius: BorderRadius.circular(16),
-                          onTap: () {
-                            Navigator.pop(context); // Close dialog
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) => const LoginScreen()),
-                            );
-                          },
+                          onTap: _handleLogout,
                           child: Center(
                             child: Text(
                               "Log Out",
