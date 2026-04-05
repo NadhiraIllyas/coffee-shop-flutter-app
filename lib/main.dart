@@ -7,8 +7,14 @@ import 'screens/profile_screen.dart';
 import 'screens/addtocartpage.dart';
 import 'screens/payment.dart';
 import 'screens/splashscreen.dart';
+import 'services/supabase_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Supabase
+  await SupabaseService.initialize();
+  
   runApp(const MyApp());
 }
 
