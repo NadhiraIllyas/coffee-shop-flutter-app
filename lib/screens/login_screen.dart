@@ -1,7 +1,59 @@
+import 'package:coffee_shop_application/services/auth_service.dart';
+import 'package:coffee_shop_application/screens/home_screen.dart';
+import 'package:coffee_shop_application/screens/signup.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
+  bool _rememberMe = false;
+
+  // FIXED: Added missing closing parenthesis
+  Future<void> _handleLogin() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final user = await _authService.signIn(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      if (user != null && mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login failed: ${e.toString()}')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +66,20 @@ class LoginScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 80),
+              
+              // Back button
+              Align(
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(
+                    Icons.arrow_back_ios,
+                    color: Colors.brown[800],
+                  ),
+                ),
+              ),
               
               // Modern logo with gradient
               Container(
@@ -70,7 +136,7 @@ class LoginScreen extends StatelessWidget {
               
               const SizedBox(height: 48),
               
-              // Email Field - Modern
+              // Email Field
               Container(
                 decoration: BoxDecoration(
                   boxShadow: [
@@ -82,6 +148,7 @@ class LoginScreen extends StatelessWidget {
                   ],
                 ),
                 child: TextField(
+                  controller: _emailController,
                   style: const TextStyle(fontSize: 16),
                   decoration: InputDecoration(
                     prefixIcon: Container(
@@ -128,6 +195,7 @@ class LoginScreen extends StatelessWidget {
                   ],
                 ),
                 child: TextField(
+                  controller: _passwordController,
                   obscureText: true,
                   style: const TextStyle(fontSize: 16),
                   decoration: InputDecoration(
@@ -173,19 +241,28 @@ class LoginScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Container(
-                        width: 20,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey[400]!,
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _rememberMe = !_rememberMe;
+                          });
+                        },
+                        child: Container(
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.grey[400]!,
+                            ),
+                            borderRadius: BorderRadius.circular(4),
                           ),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Icon(
-                          Icons.check,
-                          size: 14,
-                          color: Colors.brown[700],
+                          child: _rememberMe
+                              ? Icon(
+                                  Icons.check,
+                                  size: 14,
+                                  color: Colors.brown[700],
+                                )
+                              : null,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -242,19 +319,19 @@ class LoginScreen extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
-                    onTap: () {
-                      
-                    },
+                    onTap: _isLoading ? null : _handleLogin,
                     child: Center(
-                      child: Text(
-                        "Sign In",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
+                      child: _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : Text(
+                              "Sign In",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
                     ),
                   ),
                 ),
@@ -352,23 +429,31 @@ class LoginScreen extends StatelessWidget {
               
               const SizedBox(height: 40),
           
-              RichText(
-                text: TextSpan(
-                  text: "Don't have an account? ",
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 15,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: "Sign Up",
-                      style: TextStyle(
-                        color: Colors.brown[700],
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SignUpScreen()),
+                  );
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: "Don't have an account? ",
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 15,
                     ),
-                  ],
+                    children: [
+                      TextSpan(
+                        text: "Sign Up",
+                        style: TextStyle(
+                          color: Colors.brown[700],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               
@@ -378,5 +463,12 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }
